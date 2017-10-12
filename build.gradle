@@ -1,0 +1,129 @@
+apply plugin: 'java'
+allprojects {
+
+}
+def env = System.getProperty("profile") ?: "dev"
+
+repositories {
+    mavenCentral()
+}
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()//依赖Maven仓库
+        maven { url 'http://repo1.maven.org/maven2/' }
+        maven { url "http://repo.spring.io/release" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://repo.spring.io/snapshot" }
+    }
+    dependencies {
+        //使用1.4.2.RELEASE版本的Spring框架
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.BUILD-SNAPSHOT")
+    }
+}
+
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+
+subprojects {
+    //Put instructions for each sub project
+    apply plugin: "java"
+
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        //maven { url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+        maven { url 'http://repo1.maven.org/maven2/' }
+        maven { url "http://repo.spring.io/release" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://repo.spring.io/snapshot" }
+    }
+
+    dependencyManagement{
+        imports{
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:Brixton.RELEASE"
+        }
+    }
+
+    dependencies {
+        def springBootVersion = '2.0.0.M1'
+
+        compile "org.springframework.boot:spring-boot-starter:${springBootVersion}",
+                "org.springframework.boot:spring-boot-starter-data-redis:${springBootVersion}",
+                "org.springframework.boot:spring-boot-starter-activemq:${springBootVersion}",
+                "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}",
+                "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}",
+                "org.springframework.boot:spring-boot-starter-web:${springBootVersion}",
+                "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}",
+                "org.springframework.boot:spring-boot-devtools:${springBootVersion}",
+                "org.mybatis.spring.boot:mybatis-spring-boot-starter:1.1.1",
+                "org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure:1.1.1",
+                'org.apache.poi:poi:3.13',
+                'dom4j:dom4j:1.6.1',
+                'org.apache.poi:poi-ooxml:3.13',
+                'org.apache.poi:poi-ooxml-schemas:3.13',
+                'javax.mail:mail:1.4.7',
+                'com.drewnoakes:metadata-extractor:2.6.2',
+                'commons-beanutils:commons-beanutils:1.9.2',
+                "org.hibernate:hibernate-validator:6.0.2.Final",
+                "mysql:mysql-connector-java:5.1.31",
+                "com.alibaba:druid:1.0.31",
+                "com.alibaba:fastjson:1.2.8",
+                "com.github.jsqlparser:jsqlparser:1.0",
+                "com.github.pagehelper:pagehelper:5.0.1",
+                'commons-codec:commons-codec:1.10',
+                'com.google.guava:guava:18.0',
+                'redis.clients:jedis:2.9.0',
+                'com.google.zxing:core:3.1.0',
+                'cn.jpush.api:jpush-client:3.2.8',
+                'com.itextpdf:itextpdf:5.5.5',
+                'com.itextpdf:itext-asian:5.2.0',
+                'org.apache.commons:commons-lang3:3.4',
+                'org.apache.commons:commons-collections4:4.0',
+                'commons-fileupload:commons-fileupload:1.3.1',
+                'commons-httpclient:commons-httpclient:3.1',
+                'io.jsonwebtoken:jjwt:0.6.0',
+                'org.json:json:20160212',
+                'net.sf.json-lib:json-lib:2.4:jdk15',
+                "com.corundumstudio.socketio:netty-socketio:1.7.12",
+                'org.apache.httpcomponents:httpclient:4.5.2',
+                'org.apache.httpcomponents:httpcore:4.4.5',
+                'org.imgscalr:imgscalr-lib:4.2' ,
+                'org.elasticsearch.client:transport:5.4.1',
+                'org.apache.logging.log4j:log4j-api:2.6.2',
+                'org.apache.logging.log4j:log4j-core:2.6.2',
+                'org.elasticsearch.plugin:transport-netty4-client:5.4.1',
+                'org.webjars:jquery:3.2.1',
+                'org.webjars:bootstrap:3.3.7-1',
+                'org.webjars:angularjs:1.6.4',
+                'org.webjars:vue:0.11.0',
+                'org.webjars:webjars-locator:0.32-1',
+                'tk.mybatis:mapper:3.4.3'
+
+
+        compile ('com.squareup.okhttp:okhttp:2.4.0') {
+            exclude(module: 'bcprov-jdk15on')
+        }
+
+        testCompile ('com.squareup.okhttp:mockwebserver:2.7.5') {
+            exclude(module: 'bcprov-jdk15on')
+        }
+
+        testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    }
+
+    sourceSets {
+        main {
+            resources {
+                srcDirs = ["src/main/resources"
+                           //           , "src/main/prop/$env"
+                ]
+            }
+        }
+    }
+}
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'

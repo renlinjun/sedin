@@ -1,0 +1,9 @@
+rootProject.name = 'sedin'
+include 'sedin-model'
+include 'sedin-util'
+include 'sedin-uc-web'
+include 'sedin-uc-service'
+include 'sedin-uc-api'
+include 'sedin-eureka'
+include 'mybatis-generator'
+
