@@ -60,6 +60,8 @@ subprojects {
                 "org.springframework.boot:spring-boot-starter-web:${springBootVersion}",
                 "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}",
                 "org.springframework.boot:spring-boot-devtools:${springBootVersion}",
+                "org.springframework.boot:spring-boot-starter-security:${springBootVersion}",
+                "org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.2.RELEASE",
                 "org.mybatis.spring.boot:mybatis-spring-boot-starter:1.1.1",
                 "org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure:1.1.1",
                 'org.apache.poi:poi:3.13',
