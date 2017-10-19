@@ -75,6 +75,9 @@
 <script>
 	export default {
 		data() {
+
+     // let user = JSON.parse(sessionStorage.getItem('user'));
+
 			return {
 				sysName:'赛鼎工程有限公司',
 				collapsed:false,
@@ -111,7 +114,7 @@
 					//type: 'warning'
 				}).then(() => {
 					sessionStorage.removeItem('user');
-					_this.$router.push('/login');
+					_this.$router.push('/');
 				}).catch(() => {
 
 				});
@@ -134,7 +137,9 @@
 			var user = sessionStorage.getItem('user');
 			if (user) {
 				user = JSON.parse(user);
-				this.sysUserName = user.name || '';
+				console.log(user);
+        console.log(user.name);
+        this.sysUserName = user.name || '';
 				this.sysUserAvatar = user.avatar || '';
 			}
 

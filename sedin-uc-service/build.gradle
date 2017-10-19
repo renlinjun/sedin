@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     compile project(':sedin-uc-api')
-
+    compile project(':sedin-util')
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'

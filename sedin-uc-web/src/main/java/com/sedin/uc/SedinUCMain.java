@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 import javax.annotation.PostConstruct;
 
@@ -13,18 +14,15 @@ import javax.annotation.PostConstruct;
  * Created by liuhan on 2017-09-20.
  */
 @SpringBootApplication
+@ComponentScan(basePackages={"com.sedin"})
 public class SedinUCMain {
     private static final Logger logger = LoggerFactory
             .getLogger(SedinUCMain.class);
     @Autowired
     SqlSessionFactory sqlSessionFactory;
 
-    @Autowired
-    com.github.pagehelper.PageInterceptor pageHelperPageInterceptor;
-
     @PostConstruct
     public void initialization() {
-        sqlSessionFactory.getConfiguration().addInterceptor( pageHelperPageInterceptor);
         logger.info("完成初史化");
     }
 
