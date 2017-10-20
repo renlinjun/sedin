@@ -1,46 +1,49 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
-import NotFound from '@/components/404.vue'
+import NotFound from '@/components/NotFound.vue'
 import Home from '@/components/Home.vue'
-import Main from '@/components/Main.vue'
-import User from '@/components/nav1/User.vue'
-import Form from '@/components/nav1/Form.vue'
 
 Vue.use(Router)
 
-const router = new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'login',
-      component: Login,
-      hidden: true
-    },
-    {
-      path: '/404',
-      component: NotFound,
-      name: '',
-      hidden: true
-    },
-    {
-      path: '/',
-      component: Home,
-      name: '系统管理',
-      iconCls: 'el-icon-setting',//图标样式class
-      children: [
-        { path: '/main', component: Main, name: '主页', hidden: true },
-        { path: '/user', component: User, name: '用户管理' },
-        { path: '/form', component: Form, name: '表单' }
-      ]
-    },
-    {
-      path: '*',
-      hidden: true,
-      redirect: { path: '/404' }
+let routesArray = new Array();
+routesArray.push({
+  path: '/',
+  name: 'login',
+  component: Login,
+  hidden: true
+});
+routesArray.push({
+  path: '/404',
+  component: NotFound,
+  name: '',
+  hidden: true
+});
+
+let menus = window.sessionStorage.routes; //登录成功返回的菜单
+if (menus) {
+  //清空数组
+  let objects  = JSON.parse(menus);
+  for (let a = 0 ;a< objects.length ;a++) {
+    let object = objects[a];
+    object.component = Home;
+    for (let b = 0 ;b< object.children.length ;b++) {
+      let child = object.children[b];
+      child.component  = resolve => require([`../components/` +child.filePath], resolve);
     }
-  ]
+    routesArray.push(object);
+  }
+}
+routesArray.push({
+  path: '*',
+  hidden: true,
+  redirect: { path: '/404' }
+});
+
+const router = new Router({
+  routes:routesArray
 })
+
 
 router.beforeEach((to, from, next) => {
   //NProgress.start();

@@ -10,7 +10,7 @@
     <!--<el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>-->
     <el-form-item style="width:100%;">
       <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit2" :loading="logining">登录</el-button>
-       <el-button @click.native.prevent="handleReset2">重置</el-button>
+       <!--<el-button @click.native.prevent="handleReset2">重置</el-button>-->
     </el-form-item>
   </el-form>
 </template>
@@ -19,6 +19,10 @@
 <script>
 import { requestLogin } from '../api/api';
 import md5 from 'js-md5';
+import Login from '@/components/Login'
+import NotFound from '@/components/NotFound.vue'
+import Home from '@/components/Home.vue'
+
 //import NProgress from 'nprogress'
 export default {
   data() {
@@ -65,6 +69,66 @@ export default {
               });
             } else {
               sessionStorage.setItem('user', JSON.stringify(user));
+
+              //清空数组
+              this.$router.options.routes.splice(0 , this.$router.options.routes.length);
+
+              this.$router.options.routes.push({
+                path: '/',
+                name: 'login',
+                component: Login,
+                hidden: true
+              });
+
+              this.$router.options.routes.push({
+                path: '/404',
+                component: NotFound,
+                name: '',
+                hidden: true
+              });
+
+              let objects = [{
+                path: '/',
+                name: '系统管理',
+                iconCls: 'el-icon-setting',//图标样式class
+                children: [
+                  { path: '/main' , filePath:"func/Main.vue", name: '主页', hidden: true },
+                  { path: '/user', filePath:"func/User.vue", name: '用户管理' },
+                  { path: '/form', filePath:"func/Form.vue", name: '表单' }
+                ]
+              },{
+                path: '/',
+                name: '教程',
+                iconCls: 'el-icon-setting',//图标样式class
+                leaf: true,//只有一个节点
+                children: [
+                  { path: '/openOA', filePath:"func/OpenOA.vue", name: '教程'  }
+                ]
+              }];
+
+              sessionStorage.routes=JSON.stringify(objects);
+
+              for (let a = 0 ;a< objects.length ;a++) {
+                 let object = objects[a];
+                  object.component = Home;
+                  for (let b = 0 ;b< object.children.length ;b++) {
+                    let child = object.children[b];
+                    console.log(child);
+                    child.component  = resolve => require([`./` + child.filePath], resolve);
+                  }
+                this.$router.options.routes.push(object);
+              }
+
+
+              this.$router.options.routes.push({
+                path: '*',
+                hidden: true,
+                redirect: { path: '/404' }
+              });
+
+              this.$router.addRoutes(this.$router.options.routes);
+
+
               this.$router.push({ path: '/user' });
             }
           });
