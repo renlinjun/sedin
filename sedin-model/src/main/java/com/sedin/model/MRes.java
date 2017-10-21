@@ -32,6 +32,9 @@ public class MRes {
 
     private String description;
 
+    @Column(name = "file_path")
+    private String filePath;
+
     /**
      * @return id
      */
@@ -145,8 +148,17 @@ public class MRes {
         return resPic;
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
     /**
      * @param resPic
+
      */
     public void setResPic(String resPic) {
         this.resPic = resPic;

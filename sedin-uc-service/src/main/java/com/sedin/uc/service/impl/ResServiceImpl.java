@@ -22,23 +22,23 @@ public class ResServiceImpl implements ResService {
 //    @Value("${SERVER_DOMAIN}")
 //    private String serverDomain = "localhost";
 //
-//    @Autowired
-//    private MResMapper resDao;
+    @Autowired
+    private MResMapper resDao;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MRes> getAllResByType(String type) {
+        return resDao.selectByType(type);
+    }
 //
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<MRes> getAllResByType(String type) {
-//        return resDao.selectByType(type);
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<MRes> getRes(String ids, String type) {
-//        if (StringUtils.isEmpty(ids)) {
-//            return null;
-//        }
-//        return resDao.selectByRes(ids, type);
-//    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<MRes> getRes(String ids, String type) {
+        if (StringUtils.isEmpty(ids)) {
+            return null;
+        }
+        return resDao.selectByRes(ids, type);
+    }
 //
 //    @Override
 //    public String getResServerDomain() {

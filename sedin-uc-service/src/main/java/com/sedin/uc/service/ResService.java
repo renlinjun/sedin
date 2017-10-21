@@ -5,14 +5,14 @@ import com.sedin.model.MRes;
 import java.util.List;
 
 public interface ResService {
-//    /**
-//     * 根据类型取得所有的资源
-//     * @param type
-//     * @return
-//     */
-//    public List<MRes> getAllResByType(String type);
+    /**
+     * 根据类型取得所有的资源
+     * @param type
+     * @return
+     */
+    public List<MRes> getAllResByType(String type);
 //
-//    public List<MRes> getRes(String ids, String type);
+    public List<MRes> getRes(String ids, String type);
 //    /**
 //     * 取得资源服务器的地址，方便网页访问
 //     * @return

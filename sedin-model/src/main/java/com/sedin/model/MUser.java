@@ -1,9 +1,10 @@
 package com.sedin.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Table(name = "m_user")
-public class MUser {
+public class MUser implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

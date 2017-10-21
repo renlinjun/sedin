@@ -61,14 +61,14 @@ export default {
           requestLogin(loginParams).then(data => {
             this.logining = false;
             //NProgress.done();
-            let { success, code , msg , data: user} = data;
+            let { success, code , msg , data: userData} = data;
             if (!success) {
               this.$message({
                 message: msg,
                 type: 'error'
               });
             } else {
-              sessionStorage.setItem('user', JSON.stringify(user));
+              sessionStorage.setItem('user', JSON.stringify(userData.user));
 
               //清空数组
               this.$router.options.routes.splice(0 , this.$router.options.routes.length);
@@ -86,26 +86,7 @@ export default {
                 name: '',
                 hidden: true
               });
-
-              let objects = [{
-                path: '/',
-                name: '系统管理',
-                iconCls: 'el-icon-setting',//图标样式class
-                children: [
-                  { path: '/main' , filePath:"func/Main.vue", name: '主页', hidden: true },
-                  { path: '/user', filePath:"func/User.vue", name: '用户管理' },
-                  { path: '/form', filePath:"func/Form.vue", name: '表单' }
-                ]
-              },{
-                path: '/',
-                name: '教程',
-                iconCls: 'el-icon-setting',//图标样式class
-                leaf: true,//只有一个节点
-                children: [
-                  { path: '/openOA', filePath:"func/OpenOA.vue", name: '教程'  }
-                ]
-              }];
-
+              let objects = userData.authority.menus;
               sessionStorage.routes=JSON.stringify(objects);
 
               for (let a = 0 ;a< objects.length ;a++) {
@@ -119,7 +100,6 @@ export default {
                 this.$router.options.routes.push(object);
               }
 
-
               this.$router.options.routes.push({
                 path: '*',
                 hidden: true,
@@ -127,9 +107,7 @@ export default {
               });
 
               this.$router.addRoutes(this.$router.options.routes);
-
-
-              this.$router.push({ path: '/user' });
+              this.$router.push({ path: '/main' });
             }
           });
         } else {

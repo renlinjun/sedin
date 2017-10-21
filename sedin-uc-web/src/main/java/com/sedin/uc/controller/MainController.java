@@ -29,7 +29,7 @@ public class MainController {
         if(!result.isSuccess()){
             return  result;
         }
-        UserIdentity identity = (UserIdentity) result.getData();
+        UserIdentity identity = (UserIdentity) (((Map)result.getData()).get("user"));
         String key = identity.getId() + "";
         response.setHeader("SET-COOKIE", "token=" + identity.getToken() + ";path=/; HttpOnly");
         return result;

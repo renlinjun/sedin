@@ -30,9 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 系统用户服务
@@ -47,10 +45,6 @@ public class UserServiceImpl implements UserService , ThirdUserService{
     private RedisUtil redisUtil;
     @Autowired
     private ResService resService;
-    @Autowired
-    private MResMapper mResMapper;
-    @Autowired
-    private MResRelMapper mResRelMapper;
 
     /**
      * 密码校验
@@ -100,23 +94,105 @@ public class UserServiceImpl implements UserService , ThirdUserService{
         user.setPassword("");
         user.setAvatar(muser.getAvatar());
 
+        Map resultData = new HashMap();
+
+
+
+        Map map = new HashMap();
         //不是管理员
         if (!MUser.isAdmin(muser.getUserId())) {
 //            //取得人员有的角色
-//            List<MRes> roleList = resService.getRes(muser.getResId() + "", MResType.role.getType());
-//            String roles = this.getIds(roleList);
-//            map.put("role", roles);
-//            //取得角色下面的菜单
-//            List<MRes> menuList = resService.getRes(roles, MResType.menu.getType());
-//            map.put("menu", this.getIds(menuList));
+            List<MRes> roleList = resService.getRes(muser.getResId() + "", MResType.role.getType());
+            String roles = this.getIds(roleList);
+            map.put("role", roles);
+            map.put("roles", roleList);
+            //取得角色下面的菜单
+            List<MRes> menuList = resService.getRes(roles, MResType.menu.getType());
+            map.put("menu", this.getIds(menuList));
+            map.put("menus", menuToComp(menuList));
         } else {
+            map.put("role", "");
+            map.put("roles", "");
+            //取得角色下面的菜单
+            List<MRes> menuList = resService.getAllResByType(MResType.menu.getType());
+            map.put("menu", this.getIds(menuList));
+            map.put("menus", menuToComp(menuList));
         }
+
+        resultData.put("user" , user);
+        resultData.put("authority" , map);
+
 
         //放到redis
         redisUtil.setex(RedisKey.user_login_res_prefix + muser.getId(), RedisKey.user_login_valid_time, JsonUtil.toJson(user));
-        result.setData(user);
+        result.setData(resultData);
         result.setSuccess(true);
         return result;
+    }
+
+    /**
+     * 转化成前端组件
+     * @param menuList
+     * @return
+     */
+    private List<Map> menuToComp(List<MRes> menuList) {
+        List<Map> result = new ArrayList<>();
+
+        Map main = new HashMap();
+        main.put("path", "/");
+        main.put("name", "首页");
+        main.put("iconCls", "el-icon-setting");
+        List<Map> tempList = new ArrayList<>();
+        Map temp  = new HashMap();
+        temp.put("path", "/main");
+        temp.put("filePath", "func/Main.vue");
+        temp.put("name", "首页");
+        temp.put("hidden", true);
+        tempList.add(temp);
+        main.put("leaf" , true);
+        main.put("hidden" , true);
+        main.put("children", tempList);
+        result.add(main);
+
+        for (MRes mRes : menuList) {
+            if (mRes.getParentId() == 0) {
+                Map map = new HashMap();
+                List<Map> children = new ArrayList<>();
+
+                if ("会员管理".equals(mRes.getName())) {
+                    System.out.println("");
+                }
+
+                addChildren(menuList  , children  , mRes);
+
+                map.put("path", "/");
+                map.put("name", mRes.getName());
+                map.put("iconCls", "el-icon-setting");
+                if (children.size() == 0) {
+                    Map child = new HashMap();
+                    child.put("path", mRes.getUrl());
+                    child.put("filePath", mRes.getFilePath());
+                    child.put("name", mRes.getName());
+                    children.add(child);
+                    map.put("leaf" , true);
+                }
+                map.put("children", children);
+                result.add(map);
+            }
+        }
+        return result;
+    }
+
+    private void addChildren(List<MRes> menuList , List<Map> children, MRes mRes) {
+        for (MRes temp : menuList) {
+            if (temp.getParentId().equals(mRes.getId())) {
+                Map child = new HashMap();
+                child.put("path", temp.getUrl());
+                child.put("filePath", temp.getFilePath());
+                child.put("name", temp.getName());
+                children.add(child);
+            }
+        }
     }
 
     private String getIds(List<MRes> list) {

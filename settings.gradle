@@ -6,4 +6,6 @@ include 'sedin-uc-service'
 include 'sedin-uc-api'
 include 'sedin-eureka'
 include 'mybatis-generator'
+include 'sedin-oa-web'
+include 'sedin-oa-service'
 

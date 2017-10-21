@@ -14,5 +14,27 @@
     <result column="url" jdbcType="VARCHAR" property="url" />
     <result column="res_pic" jdbcType="VARCHAR" property="resPic" />
     <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="file_path" jdbcType="VARCHAR" property="filePath" />
   </resultMap>
+  <sql id="Base_Column_List">
+    id, name, parent_id, type, sort, status , url , res_pic , description,file_path
+  </sql>
+
+  <sql id="Column_List">
+    a.id, a.name, a.parent_id, a.type, a.sort, a.status, a.url , a.res_pic , a.file_path
+  </sql>
+
+  <select id="selectByRes" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Column_List" />
+    from m_res c left join m_res_rel b on c.id = b.res_id left join m_res a on b.rel_id = a.id
+    where c.status = 0 and a.type=#{type} and a.status = 0 and c.id in (${ids}) order by a.sort
+  </select>
+
+  <select id="selectByType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select distinct
+    <include refid="Base_Column_List" />
+    from m_res
+    where status = 0 and type = #{type} order by sort
+  </select>
 </mapper>
