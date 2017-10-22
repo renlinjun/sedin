@@ -56,7 +56,7 @@ export default {
           //_this.$router.replace('/table');
           this.logining = true;
           //NProgress.start();
-          var loginParams = { userId: this.ruleForm2.userId, password: md5(this.ruleForm2.password) };
+          var loginParams = { userId: this.ruleForm2.userId, password: md5(this.ruleForm2.password) , visit:this.$route.query.uri };
           console.log(loginParams);
           requestLogin(loginParams).then(data => {
             this.logining = false;
@@ -68,6 +68,18 @@ export default {
                 type: 'error'
               });
             } else {
+
+              if (this.$route.query.uri){
+                let url = decodeURIComponent(this.$route.query.uri);
+                if (url.indexOf("?") == -1) {
+                  url = "?ticket=" + userData.ticket;
+                } else {
+                  url = "&ticket=" + userData.ticket;
+                }
+                window.location.href = url;
+                return ;
+              }
+
               sessionStorage.setItem('user', JSON.stringify(userData.user));
 
               //清空数组

@@ -1,7 +1,6 @@
 package com.sedin.oa.controller;
 
 import com.sedin.dto.UserIdentity;
-import com.sedin.oa.third.service.HelloRemote;
 import com.sedin.oa.third.service.UserRemoteService;
 import com.sedin.util.ActResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +19,6 @@ import java.util.Map;
 public class MainController {
 
     @Autowired
-    HelloRemote helloRemote;
-
-    @RequestMapping("/hello")
-    @ResponseBody
-    public ActResult hello(String name) throws Exception {
-        ActResult result = new ActResult();
-        result.setData(helloRemote.hello(name));;
-        return result;
-    }
-
-    @Autowired
     UserRemoteService userRemoteService;
 
     @RequestMapping("/login")
@@ -41,4 +29,13 @@ public class MainController {
         return result;
     }
 
+    @RequestMapping("/")
+    public String index() {
+        return "index";
+    }
+
+    @RequestMapping("/main")
+    public String main() {
+        return "main";
+    }
 }

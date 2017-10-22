@@ -1,6 +1,7 @@
 package com.sedin.uc.service;
 
 import com.github.pagehelper.PageInfo;
+import com.sedin.dto.UserIdentity;
 import com.sedin.model.MRes;
 import com.sedin.model.MUser;
 import com.sedin.util.ActResult;
@@ -17,6 +18,13 @@ public interface UserService {
      */
     PageInfo<MUser> getListPage(Integer pageNum , Integer pageSize , MUser mUser);
 
+    /**
+     * 登录接口
+     * @return
+     */
+    public ActResult loginLocal(UserIdentity user) throws Exception ;
+    public ActResult login(UserIdentity user , boolean hasMenu) throws Exception;
+    public ActResult logout(UserIdentity user);
 
     void createOrUpdate(MUser mUser);
 //

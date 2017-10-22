@@ -2,8 +2,10 @@ package com.sedin.oa.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sedin.conversion.CustomerObjectMapper;
+import com.sedin.util.spring.SpringContextUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -19,6 +21,7 @@ public class WebAppConfigurer extends WebMvcConfigurerAdapter {
      * @param registry
      */
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor((HandlerInterceptor) SpringContextUtil.getBeanByName("springMVCInterceptor")).addPathPatterns("/**/*").excludePathPatterns("/static/**");
     }
 
     @Bean

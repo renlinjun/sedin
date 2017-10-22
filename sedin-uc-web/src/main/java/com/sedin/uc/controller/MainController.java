@@ -1,7 +1,7 @@
 package com.sedin.uc.controller;
 
 import com.sedin.dto.UserIdentity;
-import com.sedin.uc.service.ThirdUserService;
+import com.sedin.uc.service.UserService;
 import com.sedin.util.ActResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,13 +19,13 @@ import java.util.Map;
 public class MainController {
 
     @Autowired
-    ThirdUserService thirdUserService;
+    UserService userService;
 
     @RequestMapping("/login")
     @ResponseBody
     public ActResult<Map> login(HttpServletResponse response ,@RequestBody UserIdentity user) throws Exception {
         ActResult result = new ActResult();
-        result = thirdUserService.login(user);
+        result = userService.loginLocal(user);
         if(!result.isSuccess()){
             return  result;
         }

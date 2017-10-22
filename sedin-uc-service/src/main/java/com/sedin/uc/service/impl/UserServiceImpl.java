@@ -5,9 +5,11 @@ import com.github.pagehelper.PageInfo;
 import com.sedin.dto.UserIdentity;
 import com.sedin.type.MResType;
 import com.sedin.type.MUserStatusEnum;
+import com.sedin.uc.provide.service.UserProvideService;
 import com.sedin.util.ActResult;
 import com.sedin.util.BeanUtilEx;
 import com.sedin.util.JsonUtil;
+import com.sedin.util.StringUtil;
 import com.sedin.util.constant.CecurityConst;
 import com.sedin.util.constant.RedisKey;
 import com.sedin.util.page.DatagridRequestModel;
@@ -21,10 +23,10 @@ import com.sedin.uc.dao.MResMapper;
 import com.sedin.uc.dao.MResRelMapper;
 import com.sedin.uc.dao.MUserMapper;
 import com.sedin.uc.service.ResService;
-import com.sedin.uc.service.ThirdUserService;
 import com.sedin.uc.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +40,7 @@ import java.util.*;
  * @author lh
  */
 @Service("userService")
-public class UserServiceImpl implements UserService , ThirdUserService{
+public class UserServiceImpl implements UserService , UserProvideService {
     @Autowired
     private MUserMapper userDao;
     @Autowired
@@ -61,73 +63,14 @@ public class UserServiceImpl implements UserService , ThirdUserService{
         return false;
     }
 
+
+
     /**
      * 登录方法
      */
     @Override
-    @Transactional(readOnly = true)
-    public ActResult login(UserIdentity user) throws Exception {
-        ActResult result = new ActResult();
-        MUser muser = userDao.selectByUserId(user.getUserId(), true);
-        if (muser == null) {
-            result.setMsg("账号或密码错误！");
-            result.setSuccess(false);
-            return result;
-        }
-        if (!checkPassword(muser, user.getPassword())) {
-            result.setMsg("账号或者密码错误！");
-            result.setSuccess(false);
-            return result;
-        }
-        if (!muser.getStatus().equals(MUserStatusEnum.muser_permit.getValue())) {
-            result.setMsg("账号被禁用！");
-            result.setSuccess(false);
-            return result;
-        }
-
-        String token =  createToken(muser.getId());
-        user.setId(muser.getId());
-        user.setToken(token);
-        user.setUserId(muser.getUserId() == null ? "" : muser.getUserId());
-        user.setId(muser.getId());
-        user.setName(muser.getName() == null ? "" : muser.getName());
-        user.setPassword("");
-        user.setAvatar(muser.getAvatar());
-
-        Map resultData = new HashMap();
-
-
-
-        Map map = new HashMap();
-        //不是管理员
-        if (!MUser.isAdmin(muser.getUserId())) {
-//            //取得人员有的角色
-            List<MRes> roleList = resService.getRes(muser.getResId() + "", MResType.role.getType());
-            String roles = this.getIds(roleList);
-            map.put("role", roles);
-            map.put("roles", roleList);
-            //取得角色下面的菜单
-            List<MRes> menuList = resService.getRes(roles, MResType.menu.getType());
-            map.put("menu", this.getIds(menuList));
-            map.put("menus", menuToComp(menuList));
-        } else {
-            map.put("role", "");
-            map.put("roles", "");
-            //取得角色下面的菜单
-            List<MRes> menuList = resService.getAllResByType(MResType.menu.getType());
-            map.put("menu", this.getIds(menuList));
-            map.put("menus", menuToComp(menuList));
-        }
-
-        resultData.put("user" , user);
-        resultData.put("authority" , map);
-
-
-        //放到redis
-        redisUtil.setex(RedisKey.user_login_res_prefix + muser.getId(), RedisKey.user_login_valid_time, JsonUtil.toJson(user));
-        result.setData(resultData);
-        result.setSuccess(true);
-        return result;
+    public ActResult loginLocal(UserIdentity user) throws Exception {
+        return this.login(user , true);
     }
 
     /**
@@ -343,5 +286,95 @@ public class UserServiceImpl implements UserService , ThirdUserService{
         List<MUser> list = userDao.query(mUser);
 
         return new PageInfo<MUser>(list);
+    }
+
+    /**
+     * 外部登录
+     * @param user
+     * @return
+     * @throws Exception
+     */
+    public ActResult login(UserIdentity user) throws Exception {
+        return this.login(user , false);
+    }
+
+    @Override
+    public String getUserByTicket(String ticket) {
+        if(StringUtils.isEmpty(ticket)) {
+            return null;
+        }
+
+       return redisUtil.get(RedisKey.uc_ticket + ticket);
+    }
+
+    @Transactional(readOnly = true)
+    public ActResult login(UserIdentity user , boolean hasMenu) throws Exception {
+        ActResult result = new ActResult();
+        MUser muser = userDao.selectByUserId(user.getUserId(), true);
+        if (muser == null) {
+            result.setMsg("账号或密码错误！");
+            result.setSuccess(false);
+            return result;
+        }
+        if (!checkPassword(muser, user.getPassword())) {
+            result.setMsg("账号或者密码错误！");
+            result.setSuccess(false);
+            return result;
+        }
+        if (!muser.getStatus().equals(MUserStatusEnum.muser_permit.getValue())) {
+            result.setMsg("账号被禁用！");
+            result.setSuccess(false);
+            return result;
+        }
+
+        String token =  createToken(muser.getId());
+        user.setId(muser.getId());
+        user.setToken(token);
+        user.setUserId(muser.getUserId() == null ? "" : muser.getUserId());
+        user.setId(muser.getId());
+        user.setName(muser.getName() == null ? "" : muser.getName());
+        user.setPassword("");
+        user.setAvatar(muser.getAvatar());
+
+        Map resultData = new HashMap();
+
+        Map map = new HashMap();
+        if (hasMenu) {
+            //不是管理员
+            if (!MUser.isAdmin(muser.getUserId())) {
+//            //取得人员有的角色
+                List<MRes> roleList = resService.getRes(muser.getResId() + "", MResType.role.getType());
+                String roles = this.getIds(roleList);
+                map.put("role", roles);
+                map.put("roles", roleList);
+                //取得角色下面的菜单
+                List<MRes> menuList = resService.getRes(roles, MResType.menu.getType());
+                map.put("menu", this.getIds(menuList));
+                map.put("menus", menuToComp(menuList));
+            } else {
+                map.put("role", "");
+                map.put("roles", "");
+                //取得角色下面的菜单
+                List<MRes> menuList = resService.getAllResByType(MResType.menu.getType());
+                map.put("menu", this.getIds(menuList));
+                map.put("menus", menuToComp(menuList));
+            }
+        }
+        resultData.put("user" , user);
+        resultData.put("authority" , map);
+
+        String ticket = UUID.randomUUID().toString().replace("-" , "");
+        redisUtil.setex(RedisKey.uc_ticket + ticket, RedisKey.user_login_valid_time, JsonUtil.toJson(user));
+        resultData.put("ticket" , ticket);
+
+        //放到redis
+        redisUtil.setex(RedisKey.user_login_res_prefix + muser.getId(), RedisKey.user_login_valid_time, JsonUtil.toJson(user));
+
+
+
+
+        result.setData(resultData);
+        result.setSuccess(true);
+        return result;
     }
 }
