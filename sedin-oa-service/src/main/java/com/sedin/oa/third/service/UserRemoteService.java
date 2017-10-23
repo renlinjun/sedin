@@ -15,4 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface UserRemoteService {
     @PostMapping(value = "/thirdLogin")
     ActResult login(@RequestBody UserIdentity user);
+
+    @PostMapping(value = "/thirdTicket")
+    String ticket(@RequestParam("ticket") String ticket);
 }

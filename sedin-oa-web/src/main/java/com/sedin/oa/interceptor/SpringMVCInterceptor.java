@@ -36,7 +36,7 @@ public class SpringMVCInterceptor implements HandlerInterceptor {
         UserIdentity identify =  systemUtil.getUserTokenModel(request , response);
         ///是否已登录
         if (identify == null) {
-            response.sendRedirect("http://localhost:80/index.html?uri=" + URLEncoder.encode(request.getRequestURL().toString()));
+            response.sendRedirect("http://localhost:80/#/?uri=" + URLEncoder.encode(request.getRequestURL().toString()));
             return false;
         }
         //将身份信息存到request里面方便后面 controller使用

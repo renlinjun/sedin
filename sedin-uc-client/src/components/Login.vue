@@ -22,7 +22,6 @@ import md5 from 'js-md5';
 import Login from '@/components/Login'
 import NotFound from '@/components/NotFound.vue'
 import Home from '@/components/Home.vue'
-
 //import NProgress from 'nprogress'
 export default {
   data() {
@@ -49,15 +48,16 @@ export default {
     handleReset2() {
       this.$refs.ruleForm2.resetFields();
     },
+  getUrlKey:function(name){
+    return decodeURIComponent((new RegExp('[?|&]'+name+'='+'([^&;]+?)(&|#|;|$)').exec(location.href)||[,""])[1].replace(/\+/g,'%20'))||null;
+  },
     handleSubmit2(ev) {
       var _this = this;
       this.$refs.ruleForm2.validate((valid) => {
         if (valid) {
-          //_this.$router.replace('/table');
           this.logining = true;
           //NProgress.start();
           var loginParams = { userId: this.ruleForm2.userId, password: md5(this.ruleForm2.password) , visit:this.$route.query.uri };
-          console.log(loginParams);
           requestLogin(loginParams).then(data => {
             this.logining = false;
             //NProgress.done();
@@ -68,13 +68,12 @@ export default {
                 type: 'error'
               });
             } else {
-
-              if (this.$route.query.uri){
-                let url = decodeURIComponent(this.$route.query.uri);
+              let url = _this.getUrlKey("uri");
+              if (url){
                 if (url.indexOf("?") == -1) {
-                  url = "?ticket=" + userData.ticket;
+                  url += "?ticket=" + userData.ticket;
                 } else {
-                  url = "&ticket=" + userData.ticket;
+                  url += "&ticket=" + userData.ticket;
                 }
                 window.location.href = url;
                 return ;

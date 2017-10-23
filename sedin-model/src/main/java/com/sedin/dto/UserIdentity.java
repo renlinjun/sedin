@@ -19,6 +19,15 @@ public class UserIdentity extends MUser {
     
     private String verifCode;//校验码
 
+    private String visit ;
+
+    public String getVisit() {
+        return visit;
+    }
+
+    public void setVisit(String visit) {
+        this.visit = visit;
+    }
 
     public String getVerifCode() {
         return verifCode;
