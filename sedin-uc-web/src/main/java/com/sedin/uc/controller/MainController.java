@@ -20,28 +20,28 @@ public class MainController {
 
     @Autowired
     UserService userService;
+//
+//    @RequestMapping("/login")
+//    @ResponseBody
+//    public ActResult<Map> login(HttpServletResponse response ,@RequestBody UserIdentity user) throws Exception {
+//        ActResult result = new ActResult();
+//        result = userService.loginLocal(user);
+//        if(!result.isSuccess()){
+//            return  result;
+//        }
+//        UserIdentity identity = (UserIdentity) (((Map)result.getData()).get("user"));
+//        String key = identity.getId() + "";
+//        response.setHeader("SET-COOKIE", "token=" + identity.getToken() + ";path=/; HttpOnly");
+//        return result;
+//    }
 
-    @RequestMapping("/login")
-    @ResponseBody
-    public ActResult<Map> login(HttpServletResponse response ,@RequestBody UserIdentity user) throws Exception {
-        ActResult result = new ActResult();
-        result = userService.loginLocal(user);
-        if(!result.isSuccess()){
-            return  result;
-        }
-        UserIdentity identity = (UserIdentity) (((Map)result.getData()).get("user"));
-        String key = identity.getId() + "";
-        response.setHeader("SET-COOKIE", "token=" + identity.getToken() + ";path=/; HttpOnly");
-        return result;
-    }
+//    @RequestMapping("/")
+//    public String index() {
+//        return "index";
+//    }
 
-    @RequestMapping("/")
-    public String index() {
-        return "index";
-    }
-
-    @RequestMapping("/main")
-    public String main() {
-        return "main";
-    }
+//    @RequestMapping("/main")
+//    public String main() {
+//        return "main";
+//    }
 }

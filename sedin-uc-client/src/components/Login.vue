@@ -57,7 +57,7 @@ export default {
         if (valid) {
           this.logining = true;
           //NProgress.start();
-          var loginParams = { userId: this.ruleForm2.userId, password: md5(this.ruleForm2.password) , visit:this.$route.query.uri };
+          var loginParams = { username: this.ruleForm2.userId, password:  this.ruleForm2.password  , visit:_this.getUrlKey("uri") };
           requestLogin(loginParams).then(data => {
             this.logining = false;
             //NProgress.done();

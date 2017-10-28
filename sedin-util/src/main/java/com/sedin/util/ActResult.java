@@ -29,22 +29,25 @@ public class ActResult<T> implements Serializable{
 	public String getMsg() {
 		return msg;
 	}
-	public void setMsg(String msg) {
+	public ActResult setMsg(String msg) {
 		this.msg = msg;
+		return  this;
 	}
 	public T getData() {
 		return data;
 	}
-	public void setData(T data) {
+	public ActResult setData(T data) {
 		this.data = data;
+		return this;
 	}
 	
 	public int getCode() {
 		return code;
 	}
 
-	public void setCode(int code) {
+	public ActResult setCode(int code) {
 		this.code = code;
+		return this;
 	}
 
 	public static ActResult success(Object data){

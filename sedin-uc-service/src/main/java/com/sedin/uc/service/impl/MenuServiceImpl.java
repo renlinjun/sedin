@@ -10,67 +10,76 @@ import com.sedin.uc.service.ResService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 系统菜单服务类，初始化放入redis
  */
 @Component("menuService")
 public class MenuServiceImpl implements MenuService  {
+    /**
+     * 转化成前端组件
+     * @param menuList
+     * @return
+     */
+    public List<Map> menuToComp(List<MRes> menuList) {
+        List<Map> result = new ArrayList<>();
 
-//    @Autowired
-//    ResService resService;
-//
-//    @Autowired
-//    RedisUtil redisUtil;
-//
-//    private List<MRes> loadList() {
-//        return resService.getAllResByType(MResType.menu.getType());
-//    }
-//
-//    private void loadMenuTree(List<MRes> res , int level  , List<MRes> old , long id  , long outId ) {
-//        for (MRes r : old) {
-//            if (r.getId() == outId) {
-//                continue;
-//            }
-//
-//            if (r.getParentId() == id) {
-//                String pre = getPreByLevel(level);
-//                r.setName(pre + r.getName());
-//                res.add(r);
-//                loadMenuTree(  res ,   level+1  ,   old , r.getId() , outId );
-//            }
-//        }
-//        return ;
-//    }
-//
-//    private String getPreByLevel(int level) {
-//        String str = "|--";
-//        for (int i = 0; i < level ;i++) {
-//            str += "--";
-//        }
-//        return str;
-//    }
-//
-//    @Override
-//    public void delAll() {
-////        redisUtil.del(RedisKey.longlian_res_system_menu);
-//        redisUtil.set(RedisKey.longlian_res_system_menu_time, DateUtil.format(new Date()));
-//    }
-//
-//    @Override
-//    public List getAllMenus(long id) {
-//        List<MRes> list =  loadList();
-//        List<MRes> res = new ArrayList();
-//
-//        MRes r = new MRes();
-//        r.setId(0l);
-//        r.setName("根节点");
-//        res.add(r);
-//        loadMenuTree(res , 0  , list , 0 , id);
-//        return res;
-//    }
+        Map main = new HashMap();
+        main.put("path", "/");
+        main.put("name", "首页");
+        main.put("iconCls", "el-icon-setting");
+        List<Map> tempList = new ArrayList<>();
+        Map temp  = new HashMap();
+        temp.put("path", "/main");
+        temp.put("filePath", "func/Main.vue");
+        temp.put("name", "首页");
+        temp.put("hidden", true);
+        tempList.add(temp);
+        main.put("leaf" , true);
+        main.put("hidden" , true);
+        main.put("children", tempList);
+        result.add(main);
 
+        for (MRes mRes : menuList) {
+            if (mRes.getParentId() == 0) {
+                Map map = new HashMap();
+                List<Map> children = new ArrayList<>();
+
+                if ("会员管理".equals(mRes.getName())) {
+                    System.out.println("");
+                }
+
+                addChildren(menuList  , children  , mRes);
+
+                map.put("path", "/");
+                map.put("name", mRes.getName());
+                map.put("iconCls", "el-icon-setting");
+                if (children.size() == 0) {
+                    Map child = new HashMap();
+                    child.put("path", mRes.getUrl());
+                    child.put("filePath", mRes.getFilePath());
+                    child.put("name", mRes.getName());
+                    children.add(child);
+                    map.put("leaf" , true);
+                }
+                map.put("children", children);
+                result.add(map);
+            }
+        }
+        return result;
+    }
+
+
+    private void addChildren(List<MRes> menuList , List<Map> children, MRes mRes) {
+        for (MRes temp : menuList) {
+            if (temp.getParentId().equals(mRes.getId())) {
+                Map child = new HashMap();
+                child.put("path", temp.getUrl());
+                child.put("filePath", temp.getFilePath());
+                child.put("name", temp.getName());
+                children.add(child);
+            }
+        }
+    }
 }

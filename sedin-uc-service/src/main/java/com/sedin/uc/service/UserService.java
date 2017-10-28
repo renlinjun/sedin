@@ -9,6 +9,7 @@ import com.sedin.util.page.DatagridRequestModel;
 import com.sedin.util.page.DatagridResponseModel;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     /**
@@ -27,24 +28,11 @@ public interface UserService {
     public ActResult logout(UserIdentity user);
 
     void createOrUpdate(MUser mUser);
-//
-//    List<MRes> getAllRole(String type);
-//
-//    MUser findById(long id);
-//
+
+    public MUser findByUserId(String userId);
+
     void deleteByIds(String ids);
-//
-//    void passwordReset(String ids);
-//
-//    MUser findUserId(String userId);
-//
-//    /**
-//     * 根据当前登录人来修改密码
-//     * @param userId
-//     */
-//    void updatePassWord(long userId, String passWord);
-//
-//    boolean checkPassword(MUser user, String password) throws Exception;
-//
-//    public String createToken(long userid);
+
+    
+
 }

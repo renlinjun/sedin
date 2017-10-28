@@ -1,17 +1,10 @@
 package com.sedin.uc.service;
 
+import com.sedin.model.MRes;
+
 import java.util.List;
+import java.util.Map;
 
 public interface MenuService {
-//    /**
-//     * 删除redis里的菜单
-//     */
-//    public void delAll();
-//
-//    /**
-//     * 加载除了id的所有菜单
-//     * @param id
-//     * @return
-//     */
-//    public List getAllMenus(long id);
+    public List<Map> menuToComp(List<MRes> menuList);
 }

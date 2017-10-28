@@ -3,7 +3,7 @@ Navicat MySQL Data Transfer
 
 Source Server         : 192.168.1.249
 Source Server Version : 50630
-Source Host           : 192.168.1.249:3306
+Source Host           : 112.126.90.93:3306
 Source Database       : sedin
 
 Target Server Type    : MYSQL
@@ -82,4 +82,4 @@ CREATE TABLE `m_user` (
 -- ----------------------------
 -- Records of m_user
 -- ----------------------------
-INSERT INTO `m_user` VALUES ('1', '管理员', 'e10adc3949ba59abbe56e057f20f883e', '0', '121212121', '1', null, 'admin', '1111', '1', '1111', 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508308875988&di=5aaa7d9d3bf1212850c73a5c1840b21c&imgtype=0&src=http%3A%2F%2Fwww.zhlzw.com%2FUploadFiles%2FArticle_UploadFiles%2F201204%2F20120412123914329.jpg');
+INSERT INTO `m_user` VALUES ('1', '管理员', '$10$QkslJHZDwgGhXzEd/4xBBehwDmMZxdUt8zKdCpgk04UNWgd5Ryfai', '0', '121212121', '1', null, 'admin', '1111', '1', '1111', 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508308875988&di=5aaa7d9d3bf1212850c73a5c1840b21c&imgtype=0&src=http%3A%2F%2Fwww.zhlzw.com%2FUploadFiles%2FArticle_UploadFiles%2F201204%2F20120412123914329.jpg');
