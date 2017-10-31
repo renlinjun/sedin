@@ -32,9 +32,6 @@ public class WebJarsController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-//    @RequestMapping("/hello")
-//    public String main() {
-//        return "hello";
-//    }
+
 
 }

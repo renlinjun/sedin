@@ -9,6 +9,7 @@ import com.sedin.uc.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,21 +41,28 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("not found");
         }
-        List<UCGrantedAuthority> authorities = new ArrayList<>();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
         List<MRes> menuList = new ArrayList<>();
+        List<String> roles = new ArrayList<>();
         if (!MUser.isAdmin(user.getUserId())) {
             List<MRes> roleList = resService.getRes(user.getResId() + "", MResType.role.getType());
+            for (MRes res : roleList) {
+                authorities.add(new SimpleGrantedAuthority(String.valueOf(res.getId())));
+                roles.add(String.valueOf(res.getId()));
+            }
             //取得角色下面的菜单
             menuList = resService.getRes(getIds(roleList) , MResType.menu.getType());
         } else {
             menuList = resService.getAllResByType(MResType.menu.getType());
+            authorities.add(new SimpleGrantedAuthority("ADMIN"));
+            roles.add("ADMIN");
         }
         for (MRes res : menuList) {
-            authorities.add(new UCGrantedAuthority(res));
-            logger.debug("loginName is {} has resname: {} , resid : {} ", loginName , res.getName(),res.getId() );
+            authorities.add(new SimpleGrantedAuthority(String.valueOf(res.getId())));
+            roles.add(String.valueOf(res.getId()));
         }
-        return new org.springframework.security.core.userdetails.User(loginName, user.getPassword(), user.getStatus().equals(MUserStatusEnum.muser_permit.getValue()), true, true, true, authorities);
+        return new JwtUser(  authorities , user , menuList , roles);
     }
     private String getIds(List<MRes> list) {
         StringBuffer sb = new StringBuffer();
