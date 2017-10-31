@@ -17,7 +17,7 @@
 
 
 <script>
-import { requestLogin } from '../api/api';
+import { requestLogin  } from '../api/api';
 import md5 from 'js-md5';
 import Login from '@/components/Login'
 import NotFound from '@/components/NotFound.vue'
@@ -79,8 +79,9 @@ export default {
                 return ;
               }
 
+              console.log(userData);
               sessionStorage.setItem('user', JSON.stringify(userData.user));
-
+              sessionStorage.JWT=   userData.user.token;
               //清空数组
               this.$router.options.routes.splice(0 , this.$router.options.routes.length);
 

@@ -137,8 +137,6 @@
 			var user = sessionStorage.getItem('user');
 			if (user) {
 				user = JSON.parse(user);
-				console.log(user);
-        console.log(user.name);
         this.sysUserName = user.name || '';
 				this.sysUserAvatar = user.avatar || '';
 			}

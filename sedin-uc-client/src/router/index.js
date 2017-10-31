@@ -49,6 +49,7 @@ router.beforeEach((to, from, next) => {
   //NProgress.start();
   if (to.path == '/') {
     sessionStorage.removeItem('user');
+    sessionStorage.JWT= '';
   }
   let user = JSON.parse(sessionStorage.getItem('user'));
   if (!user  && to.path != '/') {
