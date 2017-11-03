@@ -58,9 +58,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority("ADMIN"));
             roles.add("ADMIN");
         }
-        for (MRes res : menuList) {
-            authorities.add(new SimpleGrantedAuthority(String.valueOf(res.getId())));
-            roles.add(String.valueOf(res.getId()));
+        if (menuList != null) {
+            for (MRes res : menuList) {
+                authorities.add(new SimpleGrantedAuthority(String.valueOf(res.getId())));
+                roles.add(String.valueOf(res.getId()));
+            }
         }
         return new JwtUser(  authorities , user , menuList , roles);
     }

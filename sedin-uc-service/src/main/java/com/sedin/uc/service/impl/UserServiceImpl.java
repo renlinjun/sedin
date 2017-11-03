@@ -29,6 +29,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +52,7 @@ public class UserServiceImpl implements UserService , UserProvideService {
 
     @Autowired
     private MenuService menuService;
+
     /**
      * 密码校验
      *
@@ -104,10 +106,19 @@ public class UserServiceImpl implements UserService , UserProvideService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createOrUpdate(MUser mUser) {
-        if (mUser.getId() == 0) {   //添加
-
+        if (mUser.getId() == null || mUser.getId() ==0l) {   //添加
+            MRes res = new MRes();
+            res.setName(mUser.getUserId());
+            res.setParentId(0l);
+            res.setType(MResType.user.getType());
+            res.setSort(0);
+            resService.saveMRes(res);
+            mUser.setResId(res.getId());
+            BCryptPasswordEncoder encoder =new BCryptPasswordEncoder();
+            mUser.setPassword(encoder.encode(mUser.getPassword().trim()));
+            userDao.insert(mUser);
         } else {
-
+            userDao.updateByPrimaryKey(mUser);
         }
     }
 

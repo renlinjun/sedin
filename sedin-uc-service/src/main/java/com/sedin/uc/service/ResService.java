@@ -13,5 +13,5 @@ public interface ResService {
     public List<MRes> getAllResByType(String type);
 
     public List<MRes> getRes(String ids, String type);
-
+    public void saveMRes(MRes res);
 }

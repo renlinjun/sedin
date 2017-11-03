@@ -25,6 +25,9 @@
         <template slot-scope="scope">
           <img :src="scope.row.avatar?scope.row.avatar:'/static/defaultAvatar.jpg'" width="50px" height="50px"/>
         </template>
+
+
+
       </el-table-column>
 			<el-table-column prop="name" label="姓名" width="120" sortable>
 			</el-table-column>
@@ -52,7 +55,16 @@
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
         <el-form-item label="头像">
-            <img :src="editForm.avatar?editForm.avatar:'/static/defaultAvatar.jpg'" width="50px" height="50px"/>
+          <el-upload
+            class="avatar-uploader"
+            action="http://localhost/fileUpload"
+            :headers="headers"
+            :show-file-list="false"
+            :on-success="handleEditAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
+            <img v-if="editForm.avatar" :src="editForm.avatar?editForm.avatar:'/static/defaultAvatar.jpg'" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
         <el-form-item label="账号" prop="userId">
           <el-input  :disabled="true" v-model="editForm.userId" auto-complete="off"></el-input>
@@ -90,7 +102,16 @@
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
         <el-form-item label="头像">
-          <img :src="addForm.avatar?addForm.avatar:'/static/defaultAvatar.jpg'" width="50px" height="50px"/>
+          <el-upload
+            class="avatar-uploader"
+            action="http://localhost/fileUpload"
+            :headers="headers"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
+            <img v-if="addForm.avatar" :src="addForm.avatar?addForm.avatar:'/static/defaultAvatar.jpg'" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
         <el-form-item label="账号" prop="userId">
           <el-input v-model="addForm.userId" auto-complete="off"></el-input>
@@ -139,6 +160,7 @@
 				filters: {
 					name: ''
 				},
+        headers:{Authorization:`Bearer ${sessionStorage.JWT}`},
 				users: [],
 				total: 0,
 				page: 1,
@@ -261,7 +283,8 @@
           idCard: '',
           email: '',
           qq: '',
-          avatar: ''
+          avatar: '',
+          status:'1'
         };
 			},
 			//编辑
@@ -335,7 +358,23 @@
 				}).catch(() => {
 
 				});
-			}
+			},handleEditAvatarSuccess(res, file) {
+       this.editForm.avatar = res.data;
+      },handleAvatarSuccess(res, file) {
+        this.addForm.avatar = res.data;
+      },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      }
 		},
 		mounted() {
 			this.getUsers();
@@ -345,5 +384,27 @@
 </script>
 
 <style scoped>
-
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
