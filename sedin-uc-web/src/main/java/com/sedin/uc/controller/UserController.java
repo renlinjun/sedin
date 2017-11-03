@@ -29,11 +29,31 @@ public class UserController {
         return userService.getListPage(page , pageSize , mUser);
     }
 
+    @RequestMapping("setType")
+    @ResponseBody
+    public ActResult setType(String ids , String type) {
+        userService.setTypeByIds(ids , type);
+        return ActResult.success();
+    }
+
+    @RequestMapping("hasUserId")
+    @ResponseBody
+    public ActResult hasUserId(String userId) {
+        return ActResult.success(userService.hasUserId(userId));
+    }
+
 
     @RequestMapping("remove")
     @ResponseBody
     public ActResult remove(Long id) {
         userService.deleteByIds(String.valueOf(id));
+        return ActResult.success();
+    }
+
+    @RequestMapping("batchremove")
+    @ResponseBody
+    public ActResult remove(String ids) {
+        userService.deleteByIds(ids);
         return ActResult.success();
     }
 

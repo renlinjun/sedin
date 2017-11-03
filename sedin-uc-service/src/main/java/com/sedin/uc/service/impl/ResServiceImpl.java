@@ -1,5 +1,7 @@
 package com.sedin.uc.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sedin.util.constant.RedisKey;
 import com.sedin.util.redis.RedisUtil;
 import com.sedin.model.MRes;
@@ -18,8 +20,8 @@ import java.util.UUID;
 
 @Service("resService")
 public class ResServiceImpl implements ResService {
-    
-//
+
+    //
     @Autowired
     private MResMapper resDao;
 
@@ -28,7 +30,8 @@ public class ResServiceImpl implements ResService {
     public List<MRes> getAllResByType(String type) {
         return resDao.selectByType(type);
     }
-//
+
+    //
     @Override
     @Transactional(readOnly = true)
     public List<MRes> getRes(String ids, String type) {
@@ -37,9 +40,44 @@ public class ResServiceImpl implements ResService {
         }
         return resDao.selectByRes(ids, type);
     }
+
     @Override
-    @Transactional(readOnly=false,rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void saveMRes(MRes res) {
         resDao.insert(res);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageInfo<MRes> getListPage(Integer pageNum, Integer pageSize, MRes res) {
+        PageHelper.startPage(pageNum, pageSize);
+
+        List<MRes> list = resDao.query(res);
+
+        return new PageInfo<MRes>(list);
+    }
+
+    @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void deleteByIds(String ids) {
+        if (StringUtils.isEmpty(ids)) return ;
+        //resDao.delete()
+    }
+
+    @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void createOrUpdate(MRes res) {
+        if (res.getId() == null || res.getId() == 0l) {   //添加
+            resDao.insert(res);
+        } else {
+            resDao.updateByPrimaryKey(res);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void setTypeByIds(String ids, String type) {
+        if (StringUtils.isEmpty(ids)) return ;
+        resDao.setTypeByIds(ids , type);
     }
 }

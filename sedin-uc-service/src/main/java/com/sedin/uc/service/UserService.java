@@ -33,6 +33,8 @@ public interface UserService {
 
     void deleteByIds(String ids);
 
-    
 
+    void setTypeByIds(String ids, String type);
+
+    boolean hasUserId(String userId);
 }

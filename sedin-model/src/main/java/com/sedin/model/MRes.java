@@ -147,11 +147,16 @@ public class MRes {
     public String getResPic() {
         return resPic;
     }
-
+    /**
+     * @return file_path
+     */
     public String getFilePath() {
         return filePath;
     }
+    /**
+     * @param filePath
 
+     */
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }

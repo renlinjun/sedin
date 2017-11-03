@@ -1,6 +1,7 @@
 package com.sedin.uc.dao;
 
 import com.sedin.model.MRes;
+import com.sedin.model.MUser;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.Mapper;
 
@@ -12,4 +13,7 @@ public interface MResMapper extends Mapper<MRes> {
 
     List<MRes> selectByRes(@Param("ids") String ids, @Param("type") String type);
 
+    List<MRes> query(@Param("res") MRes res);
+
+    void setTypeByIds(@Param("ids") String ids,@Param("status")  String type);
 }

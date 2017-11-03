@@ -37,4 +37,25 @@
     from m_res
     where status = 0 and type = #{type} order by sort
   </select>
+
+
+  <select id="query" resultType="com.sedin.model.MRes">
+    select
+    <include refid="Base_Column_List"/>
+    from m_res m
+    <where>
+      <if test="@Ognl@isNotEmpty(res.name)">
+        AND m.name LIKE CONCAT(#{res.name},'%')
+      </if>
+      <if test="@Ognl@isNotEmpty(res.type)">
+        AND m.type = #{res.type}
+      </if>
+      AND m.status in ('0','1')
+    </where>
+    order by sort
+  </select>
+
+  <update id="setTypeByIds">
+    update m_res set status=#{status} where id in (${ids})
+  </update>
 </mapper>

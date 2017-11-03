@@ -126,6 +126,22 @@ public class UserServiceImpl implements UserService , UserProvideService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(String ids) {
          //
+        if (StringUtils.isEmpty(ids)) return ;
+        userDao.setTypeByIds(ids , "2");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void setTypeByIds(String ids, String type) {
+        if (StringUtils.isEmpty(ids)) return ;
+        userDao.setTypeByIds(ids , type);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean hasUserId(String userId) {
+        MUser user = userDao.selectByUserId(userId , false);
+        return user != null;
     }
 
     public String createToken(long userid) {

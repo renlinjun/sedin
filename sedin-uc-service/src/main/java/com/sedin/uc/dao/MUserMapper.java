@@ -17,4 +17,7 @@ public interface MUserMapper extends Mapper<MUser> {
     MUser selectByUserId(@Param("userId") String userId, @Param("onlyCanLogin") boolean onlyCanLogin);
 
     List<MUser> query(@Param("user") MUser user);
+
+
+    void setTypeByIds(@Param("ids") String ids,@Param("type") String type);
 }

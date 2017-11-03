@@ -12,12 +12,13 @@
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
 				</el-form-item>
+
 			</el-form>
 		</el-col>
 
 		<!--列表-->
 		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
-			<el-table-column type="selection" width="55">
+			<el-table-column type="selection" width="55" :selectable="canSelect">
 			</el-table-column>
 			<el-table-column type="index" width="60">
 			</el-table-column>
@@ -40,7 +41,7 @@
 			<el-table-column label="操作" width="150">
 				<template slot-scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+					<el-button type="danger" :disabled="scope.row.userId =='admin' || scope.row.id == loginUser.id" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -48,6 +49,8 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+      <el-button type="primary" :disabled="this.sels.length===0" @click="handleSetType('0')">禁用</el-button>
+      <el-button type="primary" :disabled="this.sels.length===0" @click="handleSetType('1')">启用</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="5" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
@@ -152,16 +155,34 @@
 <script>
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
+	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser , setUserType , hasUserId } from '../../api/api';
 
 	export default {
 		data() {
+      let loginUserJson = JSON.parse(sessionStorage.getItem('user'));
+
+      let validateUserId = (rule, value, callback) => {
+        let para = {
+          userId: value
+        };
+        hasUserId(para).then((res) => {
+          let { success, code , msg , data:isHaveUserId} = res.data;
+          if (isHaveUserId) {
+            callback(new Error('用户已存在'))
+          } else {
+            callback()
+          }
+          //NProgress.done();
+        });
+      };
+
 			return {
 				filters: {
 					name: ''
 				},
         headers:{Authorization:`Bearer ${sessionStorage.JWT}`},
 				users: [],
+        loginUser:loginUserJson,
 				total: 0,
 				page: 1,
 				listLoading: false,
@@ -190,7 +211,6 @@
           qq: '',
           avatar: ''
 				},
-
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
 				addFormRules: {
@@ -198,7 +218,8 @@
 						{ required: true, message: '请输入姓名', trigger: 'blur' }
 					],
           userId: [
-            { required: true, message: '请输入账号', trigger: 'blur' }
+            { required: true, message: '请输入账号', trigger: 'blur' },
+            { validator: validateUserId , trigger: 'blur' }
           ],
           password: [
             { required: true, message: '请输入密码', trigger: 'blur' }
@@ -223,7 +244,9 @@
 			//性别显示转换
 			formatSex: function (row, column) {
 				return row.gender == '0' ? '男' : row.gender == '1' ? '女' : '未知';
-			},
+			},canSelect: function (row, column) {
+        return  row.userId !='admin' || row.id != this.loginUser.id;
+      },
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getUsers();
@@ -265,6 +288,22 @@
 
 				});
 			},
+      handleSetType:function (type) {
+        var ids = this.sels.map(item => item.id).toString();
+        let para = {
+          ids: ids,
+          type:type
+        };
+
+        setUserType(para).then((res) => {
+          this.$message({
+            message: '设置成功',
+            type: 'success'
+          });
+          this.getUsers();
+          //NProgress.done();
+        });
+      },
 			//显示编辑界面
 			handleEdit: function (index, row) {
 				this.editFormVisible = true;

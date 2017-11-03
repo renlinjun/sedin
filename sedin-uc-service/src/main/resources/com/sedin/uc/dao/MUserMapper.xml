@@ -22,6 +22,9 @@
   <sql id="Base_Column_List">
     id, name, password, gender, id_card, status, tel, user_id, qq, res_id, email, avatar
   </sql>
+  <update id="setTypeByIds">
+ update m_user set status=#{type} where id in (${ids})
+</update>
 
   <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
@@ -47,6 +50,7 @@
         <if test="@Ognl@isNotEmpty(user.name)">
           AND m.name LIKE CONCAT(#{user.name},'%')
         </if>
+        AND m.status in ('0','1')
       </where>
     </select>
 
