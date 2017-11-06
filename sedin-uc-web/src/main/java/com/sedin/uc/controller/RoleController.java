@@ -8,11 +8,14 @@ import com.sedin.uc.service.RelResService;
 import com.sedin.uc.service.ResService;
 import com.sedin.uc.service.UserService;
 import com.sedin.util.ActResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * Created by liuhan on 2017-11-03.
@@ -80,4 +83,23 @@ public class RoleController {
         resService.setTypeByIds(ids , type);
         return ActResult.success();
     }
+
+    @RequestMapping("getMenuByRoleId")
+    @ResponseBody
+    public ActResult getMenuByRoleId(Long roleId) {
+        List<MRes> list = resService.getRelResByResId(roleId , MResType.menu.getType());
+        return ActResult.success(list);
+    }
+
+    @RequestMapping("saveRoleMenu")
+    @ResponseBody
+    public ActResult saveRoleMenu(Long roleId , String ids) {
+        relResService.delResRelByRef(roleId);
+        if (StringUtils.isEmpty(ids)) {
+            return ActResult.success();
+        }
+        relResService.saveResRels(roleId , ids);
+        return ActResult.success();
+    }
+
 }

@@ -6,11 +6,16 @@ import com.sedin.type.MResType;
 import com.sedin.uc.service.RelResService;
 import com.sedin.uc.service.ResService;
 import com.sedin.util.ActResult;
+import com.sedin.util.JsonUtil;
+import com.sedin.util.constant.RedisKey;
+import com.sedin.util.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.*;
 
 /**
  * Created by liuhan on 2017-11-03.
@@ -25,13 +30,48 @@ public class MenuController {
     @Autowired
     RelResService relResService;
 
+    @Autowired
+    RedisUtil redisUtil;
+
     @RequestMapping("getMenu")
     @ResponseBody
     public ActResult getMenu(Long parentId) {
         return ActResult.success(resService.getResByParentId(parentId, MResType.menu.getType()));
     }
 
+    @RequestMapping("getAllMenu")
+    @ResponseBody
+    public ActResult getAllMenu() {
+        Map allRes = redisUtil.hmgetAll(RedisKey.all_res);
+        Collection<String> strs = allRes.values();
+        List<MRes> list = new ArrayList<>();
+        for (String s : strs) {
+            MRes res = JsonUtil.getObject(s , MRes.class);
+            if (res.getType().equals(MResType.menu.getType())) {
+                list.add(res);
+            }
+        }
 
+        return ActResult.success(loadMenuTree( list  ,   0l));
+    }
+
+
+
+    private List<Map> loadMenuTree(List<MRes> list  , long parentId   ) {
+        List< Map> result = new ArrayList<>();
+        for (MRes r : list) {
+            if (r.getParentId()== parentId) {
+                Map map = new HashMap();
+                map.put("name" , r.getName());
+                map.put("id" , r.getId());
+                map.put("leaf" , "0".equals(r.getIsLeaf()));
+                map.put("zones" , loadMenuTree(  list  ,   r.getId()));
+                result.add(map);
+            }
+
+        }
+        return result;
+    }
 
     @RequestMapping("remove")
     @ResponseBody
