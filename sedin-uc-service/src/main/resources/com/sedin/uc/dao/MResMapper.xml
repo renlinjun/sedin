@@ -70,6 +70,17 @@
     </where>
     order by sort
   </select>
+  <select id="getRelResByResId" resultType="com.sedin.model.MRes">
+    select
+    <include refid="Column_List" />
+    from m_res a LEFT  join m_res_rel l on l.rel_id = a.id
+    <where>
+      l.res_id = #{resId}
+      <if test="@Ognl@isNotEmpty(type)">
+        AND a.type = #{type}
+      </if>
+    </where>
+  </select>
 
   <update id="setTypeByIds">
     update m_res set status=#{status} where id in (${ids})

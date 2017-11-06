@@ -26,4 +26,12 @@ public interface ResService {
     void setTypeByIds(String ids, String type);
 
     List<MRes> getResByParentId(Long parentId , String type);
+
+    /**
+     * 查询这个资源拥有的资源
+     * @param resId
+     * @param type
+     * @return
+     */
+    public List<MRes> getRelResByResId(Long resId , String type);
 }

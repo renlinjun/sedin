@@ -110,4 +110,16 @@ public class ResServiceImpl implements ResService {
     public List<MRes> getResByParentId(Long parentId, String type) {
         return resDao.getResByParentId(parentId , type) ;
     }
+
+    /**
+     * 查询这个资源拥有的资源
+     *
+     * @param resId
+     * @param type
+     * @return
+     */
+    @Override
+    public List<MRes> getRelResByResId(Long resId, String type) {
+        return resDao.getRelResByResId(  resId,   type);
+    }
 }

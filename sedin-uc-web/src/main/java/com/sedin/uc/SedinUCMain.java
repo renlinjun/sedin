@@ -45,6 +45,7 @@ public class SedinUCMain implements CommandLineRunner {
         List<MRes> menuList = resService.getAllResByType(MResType.menu.getType());
         List<MRes> roleList = resService.getAllResByType(MResType.role.getType());
 
+        redisUtil.del(RedisKey.all_res);
         for (MRes res : menuList) {
             redisUtil.hset(RedisKey.all_res , String.valueOf(res.getId())  , JsonUtil.toJson(res));
         }

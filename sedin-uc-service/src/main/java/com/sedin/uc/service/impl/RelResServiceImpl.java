@@ -1,5 +1,6 @@
 package com.sedin.uc.service.impl;
 
+import com.sedin.model.MResRel;
 import com.sedin.uc.dao.MResMapper;
 import com.sedin.uc.dao.MResRelMapper;
 import com.sedin.uc.service.RelResService;
@@ -54,5 +55,18 @@ public class RelResServiceImpl implements RelResService {
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void delResRelByRefRel(Long id) {
         resRelDao.delResRelByRefRel(id);
+    }
+
+    @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void saveResRels(Long roleId, String ids) {
+        String[] idArray = ids.split(",");
+        for (String id : idArray) {
+            if ("0".equals(id)) continue;
+            MResRel rel = new MResRel();
+            rel.setResId(roleId);
+            rel.setRelId(Long.parseLong(id));
+            resRelDao.insert(rel);
+        }
     }
 }

@@ -67,3 +67,11 @@ export const removeMenu = params => { return axios.get(`${base}/menu/remove`, { 
 export const editMenu = params => { return axios.post(`${base}/menu/edit`, params).then(res => res.data); };
 
 export const addMenu = params => { return axios.post(`${base}/menu/add`, params).then(res => res.data); };
+
+export const getAllMenu = params => { return axios.get(`${base}/menu/getAllMenu`, { params: params }); };
+
+export const getMenuByRoleId = params => { return axios.get(`${base}/role/getMenuByRoleId`, { params: params }); };
+
+export const saveRoleMenu = params => {
+  return axios.post(`${base}/role/saveRoleMenu`, qs.stringify(params) ).then(res => res.data);
+};

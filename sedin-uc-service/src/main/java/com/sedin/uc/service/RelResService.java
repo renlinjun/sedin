@@ -23,4 +23,8 @@ public interface RelResService {
      * @param id
      */
     public void delResRelByRefRel(Long id );
+
+
+
+    void saveResRels(Long roleId, String ids);
 }

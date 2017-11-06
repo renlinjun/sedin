@@ -18,4 +18,6 @@ public interface MResMapper extends Mapper<MRes> {
     void setTypeByIds(@Param("ids") String ids,@Param("status")  String type);
 
     List<MRes> getResByParentId(@Param("parentId")  Long parentId, @Param("type") String type);
+
+    List<MRes> getRelResByResId(@Param("resId") Long resId,@Param("type")  String type);
 }
