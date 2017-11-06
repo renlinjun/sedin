@@ -3,7 +3,7 @@ Navicat MySQL Data Transfer
 
 Source Server         : 192.168.1.249
 Source Server Version : 50630
-Source Host           : 112.126.90.93:3306
+Source Host           : 192.168.1.249:3306
 Source Database       : sedin
 
 Target Server Type    : MYSQL
