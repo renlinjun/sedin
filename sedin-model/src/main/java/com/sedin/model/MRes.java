@@ -35,6 +35,17 @@ public class MRes {
     @Column(name = "file_path")
     private String filePath;
 
+    @Column(name = "is_leaf")
+    private String isLeaf;
+
+    public String getIsLeaf() {
+        return isLeaf;
+    }
+
+    public void setIsLeaf(String isLeaf) {
+        this.isLeaf = isLeaf;
+    }
+
     /**
      * @return id
      */

@@ -15,13 +15,14 @@
     <result column="res_pic" jdbcType="VARCHAR" property="resPic" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="file_path" jdbcType="VARCHAR" property="filePath" />
+    <result column="is_leaf" jdbcType="VARCHAR" property="isLeaf" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, name, parent_id, type, sort, status , url , res_pic , description,file_path
+    id, name, parent_id, type, sort, status , url , res_pic , description,file_path , is_leaf
   </sql>
 
   <sql id="Column_List">
-    a.id, a.name, a.parent_id, a.type, a.sort, a.status, a.url , a.res_pic , a.file_path
+    a.id, a.name, a.parent_id, a.type, a.sort, a.status, a.url , a.res_pic , a.file_path , a.is_leaf
   </sql>
 
   <select id="selectByRes" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -49,6 +50,21 @@
       </if>
       <if test="@Ognl@isNotEmpty(res.type)">
         AND m.type = #{res.type}
+      </if>
+      AND m.status in ('0','1')
+    </where>
+    order by sort
+  </select>
+  <select id="getResByParentId" resultType="com.sedin.model.MRes">
+    select
+    <include refid="Base_Column_List"/>
+    from m_res m
+    <where>
+      <if test="@Ognl@isNotEmpty(type)">
+        AND m.type = #{type}
+      </if>
+      <if test="@Ognl@isNotEmpty(parentId)">
+        AND m.parent_id = #{parentId}
       </if>
       AND m.status in ('0','1')
     </where>

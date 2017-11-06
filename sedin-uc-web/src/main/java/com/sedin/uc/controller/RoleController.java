@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.sedin.model.MRes;
 import com.sedin.model.MUser;
 import com.sedin.type.MResType;
+import com.sedin.uc.service.RelResService;
 import com.sedin.uc.service.ResService;
 import com.sedin.uc.service.UserService;
 import com.sedin.util.ActResult;
@@ -23,6 +24,9 @@ public class RoleController {
     @Autowired
     ResService resService;
 
+    @Autowired
+    RelResService relResService;
+
     @RequestMapping("list")
     @ResponseBody
     public PageInfo<MRes> list(Integer page , Integer pageSize , MRes res) {
@@ -38,14 +42,18 @@ public class RoleController {
     @RequestMapping("remove")
     @ResponseBody
     public ActResult remove(Long id) {
-        resService.deleteByIds(String.valueOf(id));
+        if (id == null || id == 0 ) return ActResult.fail("参数为空！");
+        if (relResService.hasResRefThis(id)) {
+            return ActResult.fail("有资源引用，无法删除！");
+        }
+        resService .deleteRealById(id , false);
         return ActResult.success();
     }
 
     @RequestMapping("batchremove")
     @ResponseBody
     public ActResult remove(String ids) {
-        resService.deleteByIds(ids);
+       // resService.deleteByIds(ids);
         return ActResult.success();
     }
 

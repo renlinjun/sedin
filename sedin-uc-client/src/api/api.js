@@ -12,7 +12,6 @@ axios.interceptors.request.use(
     if (sessionStorage.JWT) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
       config.headers.Authorization = `Bearer ${sessionStorage.JWT}`;
     }
-    console.log(config);
     return config;
   },
   err => {
@@ -58,3 +57,13 @@ export const addRole = params => { return axios.post(`${base}/role/add`, params)
 export const setRoleType = params => {
   return axios.post(`${base}/role/setType`, qs.stringify(params) ).then(res => res.data);
 };
+
+
+export const getMenus = params => { return axios.get(`${base}/menu/getMenu`, { params: params }); };
+
+
+export const removeMenu = params => { return axios.get(`${base}/menu/remove`, { params: params }); };
+
+export const editMenu = params => { return axios.post(`${base}/menu/edit`, params).then(res => res.data); };
+
+export const addMenu = params => { return axios.post(`${base}/menu/add`, params).then(res => res.data); };

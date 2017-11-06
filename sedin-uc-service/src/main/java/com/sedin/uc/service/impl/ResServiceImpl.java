@@ -2,6 +2,7 @@ package com.sedin.uc.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sedin.uc.service.RelResService;
 import com.sedin.util.constant.RedisKey;
 import com.sedin.util.redis.RedisUtil;
 import com.sedin.model.MRes;
@@ -24,6 +25,9 @@ public class ResServiceImpl implements ResService {
     //
     @Autowired
     private MResMapper resDao;
+
+    @Autowired
+    RelResService relResService;
 
     @Override
     @Transactional(readOnly = true)
@@ -59,9 +63,25 @@ public class ResServiceImpl implements ResService {
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public void deleteByIds(String ids) {
-        if (StringUtils.isEmpty(ids)) return ;
-        //resDao.delete()
+    public void deleteRealById(Long id , boolean delRefRel) {
+        if (delRefRel) {
+            relResService.delResRelByRef(id);
+        }
+        MRes res = resDao.selectByPrimaryKey(id);
+        Long parentId = res.getParentId();
+        resDao.delete(res);
+
+        if (parentId != null && parentId > 0 ) {
+
+            List<MRes> list = resDao.getResByParentId(parentId , null) ;
+            if (list.size() == 0) {
+                MRes parent = resDao.selectByPrimaryKey(parentId);
+                parent.setIsLeaf("0");
+                resDao.updateByPrimaryKey(parent);
+            }
+        }
+
+
     }
 
     @Override
@@ -69,6 +89,11 @@ public class ResServiceImpl implements ResService {
     public void createOrUpdate(MRes res) {
         if (res.getId() == null || res.getId() == 0l) {   //添加
             resDao.insert(res);
+            if (res.getParentId() != null && res.getParentId() > 0 ) {
+                MRes parent = resDao.selectByPrimaryKey(res.getParentId());
+                parent.setIsLeaf("1");
+                resDao.updateByPrimaryKey(parent);
+            }
         } else {
             resDao.updateByPrimaryKey(res);
         }
@@ -79,5 +104,10 @@ public class ResServiceImpl implements ResService {
     public void setTypeByIds(String ids, String type) {
         if (StringUtils.isEmpty(ids)) return ;
         resDao.setTypeByIds(ids , type);
+    }
+
+    @Override
+    public List<MRes> getResByParentId(Long parentId, String type) {
+        return resDao.getResByParentId(parentId , type) ;
     }
 }

@@ -2,6 +2,7 @@ package com.sedin.uc.service;
 
 import com.github.pagehelper.PageInfo;
 import com.sedin.model.MRes;
+import com.sedin.util.ActResult;
 
 import java.util.List;
 
@@ -18,9 +19,11 @@ public interface ResService {
 
     PageInfo<MRes> getListPage(Integer page, Integer pageSize, MRes res );
 
-    void deleteByIds(String s);
+    void deleteRealById(Long id,boolean delRefRel);
 
     void createOrUpdate(MRes res);
 
     void setTypeByIds(String ids, String type);
+
+    List<MRes> getResByParentId(Long parentId , String type);
 }

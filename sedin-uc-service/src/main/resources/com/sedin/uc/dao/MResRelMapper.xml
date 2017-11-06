@@ -9,4 +9,13 @@
     <result column="res_id" jdbcType="BIGINT" property="resId" />
     <result column="rel_id" jdbcType="BIGINT" property="relId" />
   </resultMap>
+  <delete id="deleteByResId">
+     delete from m_res_rel where res_id = #{resId}
+  </delete>
+  <delete id="delResRelByRefRel">
+       delete from m_res_rel where rel_id = #{relId}
+  </delete>
+  <select id="selectResRefThisCount" resultType="java.lang.Long">
+      select count(1) from m_res_rel where rel_id = #{relId}
+  </select>
 </mapper>

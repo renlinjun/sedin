@@ -34,13 +34,16 @@
         <template slot-scope="scope">
           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button type="danger"   size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+          <el-button type="danger"   size="small" @click="handleAuthTree(scope.$index, scope.row)">设置权限</el-button>
+
+
+
         </template>
       </el-table-column>
     </el-table>
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
       <el-button type="primary" :disabled="this.sels.length===0" @click="handleSetType('1')">禁用</el-button>
       <el-button type="primary" :disabled="this.sels.length===0" @click="handleSetType('0')">启用</el-button>
       <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="5" :total="total" style="float:right;">
@@ -94,13 +97,34 @@
         <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
       </div>
     </el-dialog>
+
+    <!--设置权限界面-->
+    <el-dialog title="权限" v-model="authTreeVisible" :close-on-click-modal="false">
+      <el-input
+        placeholder="输入关键字进行过滤"
+        v-model="filterText">
+      </el-input>
+      <el-tree
+        :props="props1"
+        show-checkbox
+        :load="loadNode"
+        highlight-current
+        node-key="id"
+        ref="tree"
+        lazy>
+      </el-tree>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native="authTreeVisible = false">取消</el-button>
+        <el-button type="primary" @click.native="authSaveSubmit" :loading="authSaveLoading">保存</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 
 <script>
   import util from '../../common/js/util'
   //import NProgress from 'nprogress'
-  import { getRoleListPage, removeRole, batchRemoveRole, editRole, addRole , setRoleType } from '../../api/api';
+  import { getRoleListPage, removeRole, batchRemoveRole, editRole, addRole , setRoleType , getMenus} from '../../api/api';
 
   export default {
     data() {
@@ -135,7 +159,7 @@
         addLoading: false,
         addFormRules: {
           name: [
-            { required: true, message: '请输入姓名', trigger: 'blur' }
+            { required: true, message: '请输入角色名', trigger: 'blur' }
           ]
         },
         //新增界面数据
@@ -143,8 +167,17 @@
           name: '',
           description: '',
           sort:''
-        }
-
+        },
+        props1: {
+          label: 'name',
+          children: 'zones',
+          isLeaf: 'leaf'
+        },
+        currentNodeData:{ name: '根目录' , id:0 , zones:[] },
+        currentNode:null,
+        currentLevel:1,
+        authTreeVisible:false,
+        authSaveLoading:false
       }
     },
     methods: {
@@ -154,6 +187,33 @@
       handleCurrentChange(val) {
         this.page = val;
         this.getRoles();
+      },
+      getMenus:function () {
+        let para = {id:0};
+        getMenus(para).then((res) => {
+          //加载整个菜单数据
+          /*let list = res.data.data;
+          let arr = new Array(list.length);
+          this.$set(node.data, 'zones', []);
+          for (let i = 0 ;i < list.length ;i++ ) {
+            let res = list[i];
+            let isLeaf = (res.isLeaf == '0') ;
+
+            let nod = {
+              name:res.name,
+              id:res.id,
+              leaf: isLeaf,
+              data:res,
+              zones:[]
+            };
+            arr[i] = nod;
+            if (!node.data.zones) {
+              this.$set(node.data, 'zones', []);
+            }
+            node.data.zones.push(nod);
+          }
+          resolve(arr);*/
+        });
       },
       //获取用户列表
       getRoles() {
@@ -223,6 +283,13 @@
           sort:''
         };
       },
+      //显示新增界面
+      handleAuthTree: function (index, row) {
+        this.authTreeVisible = true;
+        this.$refs.tree.setCheckedKeys([]);
+        //加载节点数据
+        //设置节点数据
+      },
       //编辑
       editSubmit: function () {
         this.$refs.editForm.validate((valid) => {
@@ -270,6 +337,9 @@
           }
         });
       },
+      authSaveSubmit:function () {
+          //保存节点数据
+      },
       selsChange: function (sels) {
         this.sels = sels;
       },
@@ -298,6 +368,7 @@
     },
     mounted() {
       this.getRoles();
+      this.getMenus();
     }
   }
 
