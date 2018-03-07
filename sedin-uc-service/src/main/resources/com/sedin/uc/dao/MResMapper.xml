@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sedin.uc.dao.MResMapper">
+  <resultMap id="BaseResultMap" type="com.sedin.model.MRes">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="res_pic" jdbcType="VARCHAR" property="resPic" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="file_path" jdbcType="VARCHAR" property="filePath" />
+    <result column="is_leaf" jdbcType="VARCHAR" property="isLeaf" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, parent_id, type, sort, status , url , res_pic , description,file_path , is_leaf
+  </sql>
+
+  <sql id="Column_List">
+    a.id, a.name, a.parent_id, a.type, a.sort, a.status, a.url , a.res_pic , a.file_path , a.is_leaf
+  </sql>
+
+  <select id="selectByRes" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Column_List" />
+    from m_res c left join m_res_rel b on c.id = b.res_id left join m_res a on b.rel_id = a.id
+    where c.status = 0 and a.type=#{type} and a.status = 0 and c.id in (${ids}) order by a.sort
+  </select>
+
+  <select id="selectByType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select distinct
+    <include refid="Base_Column_List" />
+    from m_res
+    where status = 0 and type = #{type} order by sort
+  </select>
+
+
+  <select id="query" resultType="com.sedin.model.MRes">
+    select
+    <include refid="Base_Column_List"/>
+    from m_res m
+    <where>
+      <if test="@Ognl@isNotEmpty(res.name)">
+        AND m.name LIKE CONCAT(#{res.name},'%')
+      </if>
+      <if test="@Ognl@isNotEmpty(res.type)">
+        AND m.type = #{res.type}
+      </if>
+      AND m.status in ('0','1')
+    </where>
+    order by sort
+  </select>
+  <select id="getResByParentId" resultType="com.sedin.model.MRes">
+    select
+    <include refid="Base_Column_List"/>
+    from m_res m
+    <where>
+      <if test="@Ognl@isNotEmpty(type)">
+        AND m.type = #{type}
+      </if>
+      <if test="@Ognl@isNotEmpty(parentId)">
+        AND m.parent_id = #{parentId}
+      </if>
+      AND m.status in ('0','1')
+    </where>
+    order by sort
+  </select>
+  <select id="getRelResByResId" resultType="com.sedin.model.MRes">
+    select
+    <include refid="Column_List" />
+    from m_res a LEFT  join m_res_rel l on l.rel_id = a.id
+    <where>
+      l.res_id = #{resId}
+      <if test="@Ognl@isNotEmpty(type)">
+        AND a.type = #{type}
+      </if>
+    </where>
+  </select>
+
+  <update id="setTypeByIds">
+    update m_res set status=#{status} where id in (${ids})
+  </update>
+</mapper>

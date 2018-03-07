@@ -34,13 +34,4 @@ public class WebJarsController {
     }
 
 
-    /**
-     * 访问记录
-     * @return
-     */
-    @RequestMapping("/hello")
-    public String hello(){
-        System.out.println("sss222");
-        return "hello";
-    }
 }

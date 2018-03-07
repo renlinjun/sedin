@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html  style="background:#f7f7f7" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
     <script type="text/javascript"  th:src="@{/webjarslocator/vue/vue.js}"></script>
+    <script type="text/javascript"  src="@{/webjarslocator/element-ui/element-ui.js}"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-default/index.css">
 </head>
 <body>
-sss
+<div id="app">
+    <el-button @click="visible = true">按钮</el-button>
+    <el-dialog v-model="visible" title="Hello world">
+        <p>欢迎使用 Element</p>
+    </el-dialog>
+</div>
 </body>
+<!-- 引入组件库 -->
+<script src="https//unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return { visible: false }
+        }
+    })
+</script>
 </html>

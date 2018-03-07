@@ -50,3 +50,5 @@ gradlew.bat
 .settings
 log.log
 sedin.iml
+log.log.*
+gc.log

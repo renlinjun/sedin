@@ -60,3 +60,4 @@ task mybatisGenerate << {
         }
     }
 }
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'

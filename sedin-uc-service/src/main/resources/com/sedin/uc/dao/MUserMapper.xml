@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sedin.uc.dao.MUserMapper">
+  <resultMap id="BaseResultMap" type="com.sedin.model.MUser">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="qq" jdbcType="VARCHAR" property="qq" />
+    <result column="res_id" jdbcType="BIGINT" property="resId" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, name, password, gender, id_card, status, tel, user_id, qq, res_id, email, avatar
+  </sql>
+  <update id="setTypeByIds">
+ update m_user set status=#{type} where id in (${ids})
+</update>
+
+  <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from m_user
+    where user_id = #{userId}
+    <!-- 只查能登录的 -->
+    <if test="onlyCanLogin">
+      and (status = 1 or status = 0)
+    </if>
+  </select>
+
+  <select id="queryAll"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from m_user
+  </select>
+    <select id="query" resultType="com.sedin.model.MUser">
+      select
+      <include refid="Base_Column_List"/>
+      from m_user m
+      <where>
+        <if test="@Ognl@isNotEmpty(user.name)">
+          AND m.name LIKE CONCAT(#{user.name},'%')
+        </if>
+        AND m.status in ('0','1')
+      </where>
+    </select>
+
+</mapper>
